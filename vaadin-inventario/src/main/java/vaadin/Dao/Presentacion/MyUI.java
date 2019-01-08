@@ -229,7 +229,7 @@ public class MyUI extends UI {
 					nombresCheck.add(bla.getNombre());
 				}
 	    	multi.setItems(nombresCheck);
-			
+			/*
 	    	formLayout.addComponents(
 	    			textFieldNombre, 
 	    			textFieldCantidad, 
@@ -240,7 +240,7 @@ public class MyUI extends UI {
 	    	horizontalLayout.addComponents(grid, formLayout);
 	    	horizontalLayout.setComponentAlignment(grid, Alignment.MIDDLE_CENTER);
 	    	setContent(horizontalLayout);
-	    	
+	    	*/
         	removeWindow(subWindow);
         });
    
