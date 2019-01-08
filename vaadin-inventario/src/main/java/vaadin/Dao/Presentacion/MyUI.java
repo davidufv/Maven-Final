@@ -123,7 +123,7 @@ public class MyUI extends UI {
     			
     	);
 
-    	horizontalLayout.addComponents(formLayout, formLayout2);
+    	horizontalLayout.addComponents( formLayout2,formLayout);
     	setContent(horizontalLayout);
     	
     	//Ventana que se abre al clicar con los campos correspondientes
