@@ -102,25 +102,28 @@ public class MyUI extends UI {
     	Grid<Producto> grid = new Grid<Producto>();
     	Grid<Transaccion> grid2 = new Grid<Transaccion>();
     	HorizontalLayout horizontalLayout = new HorizontalLayout();	
+	
      	formLayout.addComponents(
     			textFieldNombre, 
     			textFieldCantidad, 
     			textFieldFabricacion,
     			multi,
-    			buttonAddProc	
-    			
-    	);
-     	formLayout2.addComponents(
-     			textCostesFabricacion,
+    			buttonAddProc,
+			textCostesFabricacion,
      			textIngreso,
      			ingreso,
      			cambio1,
      			cambio2
+    			
+    	);
+     	formLayout2.addComponents(
+     			grid,
+			grid2
      			
     			
     	);
 
-    	horizontalLayout.addComponents(grid, formLayout,grid2,formLayout2);
+    	horizontalLayout.addComponents(formLayout, formLayout2);
     	setContent(horizontalLayout);
     	
     	//Ventana que se abre al clicar con los campos correspondientes
