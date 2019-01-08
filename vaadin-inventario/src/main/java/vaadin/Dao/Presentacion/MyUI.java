@@ -66,7 +66,7 @@ public class MyUI extends UI {
     	TextField textFieldNombre = new TextField("Nombre");
     	TextField textFieldCantidad = new TextField("Cantidad" );
     	TextField textFieldFabricacion = new TextField("Precio Fabricación " );
-    	TextField textCostesFabricacion = new TextField("Costes Fabricación totales" );
+    	TextField textCostesFabricacion = new TextField("Costes Fabricación Producto" );
     	TextField textIngreso = new TextField("Nuevo Ingreso Efectivo");
     	TextField cambio1 = new TextField("Cambio en Dracmas");
     	TextField cambio2 = new TextField("Cambio en Doblones");
@@ -86,12 +86,23 @@ public class MyUI extends UI {
 			}
     	multi.setItems(nombres);
     	
-    
+
     	//Campo costes totales, se va sumando el coste de todos los productos de la lista
     	Iterator<Producto> costes = ListaProductos.getInstance().getLista_productos().iterator();
+    	Iterator<Transaccion> costes2 = ListaTransacciones.getInstance().getListaTransacciones().iterator();
+
 		while (costes.hasNext()) {
 			 costesFabTotales += costes.next().getPrecioFabricacion();
-			System.out.println(costesFabTotales);
+			 System.out.println(costesFabTotales);	
+			}
+		
+	//	Producto porc = new Producto();
+		//costesFabTotales += 
+		//Costes totales de fabricacion para que no se pierdan cada vez que reinicias la pagina
+		
+		while (costes2.hasNext()) {
+			 costesFabTotales += costes2.next().getCostesTotales();
+			 System.out.println(costesFabTotales);
 			}
 		//Se pone esos costes totales por pantalla y a su vez el cambio a otra divisa
 		textCostesFabricacion.setValue(costesFabTotales.toString());
@@ -171,17 +182,45 @@ public class MyUI extends UI {
         	
         	Integer auxCantidad = 0;  	
         	Integer cantidadMas = 0;
+        	Double auxCostes = 0.0;
+        	Double auxCostes2 = 0.0;
         	auxCantidad = Integer.parseInt(textFieldCantidadMas.getValue());
-        	cantidadMas = selectedProducto.getCantidad() + auxCantidad;
-        	selectedProducto.setCantidad(cantidadMas);	
-    		costesFabTotales = cantidadMas * selectedProducto.getPrecioFabricacion();
-        	System.out.println(costesFabTotales);
-    		textCostesFabricacion.setValue(costesFabTotales.toString());
-    		cambio1.setValue(cambioADracma.cambio(costesFabTotales).toString());
-    		cambio2.setValue(cambioADoblon.cambio(costesFabTotales).toString());
-        	textFieldCantidadMas.clear();
-        	grid.setItems(ListaProductos.getInstance().getLista_productos());
-        	removeWindow(subWindow);
+        	if( auxCantidad == 1)
+        	{	
+            	cantidadMas = selectedProducto.getCantidad() + auxCantidad;
+            	selectedProducto.setCantidad(cantidadMas);	
+            	auxCostes2 = costesFabTotales;
+        		costesFabTotales += selectedProducto.getPrecioFabricacion();
+        		textCostesFabricacion.setValue(costesFabTotales.toString());
+        		System.out.println("costes uno: " + costesFabTotales);
+        		cambio1.setValue(cambioADracma.cambio(costesFabTotales).toString());
+        		cambio2.setValue(cambioADoblon.cambio(costesFabTotales).toString());
+            	textFieldCantidadMas.clear();
+            	grid.setItems(ListaProductos.getInstance().getLista_productos());
+            	removeWindow(subWindow);
+            	//Page.getCurrent().reload();
+        	}else {
+	        	cantidadMas = selectedProducto.getCantidad() + auxCantidad;
+	        	selectedProducto.setCantidad(cantidadMas);	
+	        	auxCostes2 = costesFabTotales;
+	    		costesFabTotales = cantidadMas * selectedProducto.getPrecioFabricacion();
+	    		 if(auxCostes2 <= costesFabTotales) {
+	    			auxCostes = auxCostes2 - costesFabTotales;   	
+	    		} 	
+	    		auxCostes = costesFabTotales - auxCostes2;  
+	        	System.out.println("sumar  : " + costesFabTotales);
+	        	System.out.println("sumar aux : " + auxCostes);
+	        	ListaTransacciones.getInstance().getListaTransacciones().add(new Transaccion(		
+	        			auxCostes
+	        			));
+	    		textCostesFabricacion.setValue(costesFabTotales.toString());
+	    		cambio1.setValue(cambioADracma.cambio(costesFabTotales).toString());
+	    		cambio2.setValue(cambioADoblon.cambio(costesFabTotales).toString());
+	        	textFieldCantidadMas.clear();
+	        	grid.setItems(ListaProductos.getInstance().getLista_productos());
+	        	removeWindow(subWindow);
+        	}
+        	//Page.getCurrent().reload();
         });
         
       //Boton Restar cantidad
@@ -229,18 +268,6 @@ public class MyUI extends UI {
 					nombresCheck.add(bla.getNombre());
 				}
 	    	multi.setItems(nombresCheck);
-			/*
-	    	formLayout.addComponents(
-	    			textFieldNombre, 
-	    			textFieldCantidad, 
-	    			textFieldFabricacion,
-	    			buttonAddProc
-	    			
-	    	);
-	    	horizontalLayout.addComponents(grid, formLayout);
-	    	horizontalLayout.setComponentAlignment(grid, Alignment.MIDDLE_CENTER);
-	    	setContent(horizontalLayout);
-	    	*/
         	removeWindow(subWindow);
         });
    
@@ -325,18 +352,6 @@ public class MyUI extends UI {
 	    		textFieldCantidad.clear();
 				textFieldFabricacion.clear();
 	    		grid.setItems(ListaProductos.getInstance().getLista_productos());
-	    		
-	    		formLayout.addComponents(
-		    			textFieldNombre, 
-		    			textFieldCantidad, 
-		    			textFieldFabricacion,
-		    			multi,
-		    			buttonAddProc			
-		    	);
-		    	
-		    	horizontalLayout.addComponents(grid, formLayout);
-		    	setContent(horizontalLayout);
-		    	
 		    	//ACTUALIZAr pagina
 		    	Page.getCurrent().reload();
 	    		Notification.show("Productos totales " + 
@@ -378,7 +393,7 @@ public class MyUI extends UI {
     		textFieldCantidad.clear();
 			textFieldFabricacion.clear();
     		grid.setItems(ListaProductos.getInstance().getLista_productos());
-  	
+  	/*
     		formLayout.addComponents(
 	    			textFieldNombre, 
 	    			textFieldCantidad, 
@@ -389,7 +404,7 @@ public class MyUI extends UI {
 	    			
 	    	);
 	    	horizontalLayout.addComponents(grid, formLayout);
-	    	setContent(horizontalLayout);
+	    	setContent(horizontalLayout);*/
     	}
 	    });	    	
     }	
